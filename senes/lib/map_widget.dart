@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:senes/route_point.dart';
 
 class MapWidget extends StatefulWidget {
   const MapWidget(this.url, this.token, {Key? key}) : super(key: key);
@@ -17,13 +17,14 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   bool permission = false;
   late Future<Position> pos;
+
+  MapController _controller = MapController();
+  List<RoutePoint> points = [];
+
+  // Automatically get coordinates when the device moves more than 15m
   StreamSubscription<Position> posStream = Geolocator.getPositionStream(
-          desiredAccuracy: LocationAccuracy.best, distanceFilter: 10)
-      .listen((Position position) {
-    print(position == null
-        ? 'Unknown'
-        : position.latitude.toString() + ', ' + position.longitude.toString());
-  });
+          desiredAccuracy: LocationAccuracy.best, distanceFilter: 15)
+      .listen((Position position) {});
 
   @override
   void initState() {
@@ -33,6 +34,8 @@ class _MapWidgetState extends State<MapWidget> {
           if (permission) {
             pos = Geolocator.getCurrentPosition(
                 desiredAccuracy: LocationAccuracy.best);
+            pos.then((value) => points
+                .add(RoutePoint(LatLng(value.latitude, value.longitude))));
           }
         }));
     super.initState();
@@ -40,6 +43,12 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
+    posStream.onData((data) => setState(() {
+          points.add(RoutePoint(LatLng(data.latitude, data.longitude)));
+          _controller.move(points.last.latlng, _controller.zoom);
+          print(points.last.latlng.toString());
+        }));
+
     // Ensure proper permissions ahve been granted before showing the map
     if (permission) {
       // Wait until the user's location is found to display the map
@@ -50,17 +59,35 @@ class _MapWidgetState extends State<MapWidget> {
               // Return map widget
               return FlutterMap(
                   options: MapOptions(
-                    center: LatLng(
-                        snapshot.data!.latitude, snapshot.data!.longitude),
-                    maxZoom: 18.4,
-                  ),
+                      center: points.last.latlng,
+                      maxZoom: 18.4,
+                      controller: _controller,
+                      onMapCreated: (c) {
+                        _controller = c;
+                      }),
                   layers: [
                     TileLayerOptions(
                         urlTemplate: widget.url,
                         additionalOptions: {
                           'accessToken': widget.token,
                           'id': 'mapbox.satellite'
-                        })
+                        }),
+                    MarkerLayerOptions(
+                        markers: List<Marker>.generate(points.length, (int i) {
+                      return Marker(
+                          point: points[i].latlng,
+                          builder: (BuildContext context) {
+                            return IconButton(
+                              icon: const Icon(Icons.circle),
+                              iconSize: 10.0,
+                              color: Colors.redAccent,
+                              onPressed: () {
+                                print(
+                                    "Marker pressed: ${points[i].latlng.toString()}");
+                              },
+                            );
+                          });
+                    }))
                   ]);
             } else {
               //return loading screen
