@@ -14,10 +14,17 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> {
   bool permission = false;
+  late Future<Position> pos;
+
   @override
   void initState() {
     _checkPermissions().then((value) => setState(() {
           permission = value;
+
+          if (permission) {
+            pos = Geolocator.getCurrentPosition(
+                desiredAccuracy: LocationAccuracy.best);
+          }
         }));
     super.initState();
   }
@@ -26,17 +33,45 @@ class _MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     // Ensure proper permissions ahve been granted before showing the map
     if (permission) {
-      return FlutterMap(
-          options: MapOptions(
-            center: LatLng(1, 1),
-            maxZoom: 18.4,
-          ),
-          layers: [
-            TileLayerOptions(urlTemplate: widget.url, additionalOptions: {
-              'accessToken': widget.token,
-              'id': 'mapbox.satellite'
-            })
-          ]);
+      // Wait until the user's location is found to display the map
+      return FutureBuilder(
+          future: pos,
+          builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
+            if (snapshot.hasData) {
+              // Return map widget
+              return FlutterMap(
+                  options: MapOptions(
+                    center: LatLng(
+                        snapshot.data!.latitude, snapshot.data!.longitude),
+                    maxZoom: 18.4,
+                  ),
+                  layers: [
+                    TileLayerOptions(
+                        urlTemplate: widget.url,
+                        additionalOptions: {
+                          'accessToken': widget.token,
+                          'id': 'mapbox.satellite'
+                        })
+                  ]);
+            } else {
+              //return loading screen
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    SizedBox(
+                        child: CircularProgressIndicator(),
+                        width: 60,
+                        height: 60),
+                    Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text('Loading Location...'))
+                  ],
+                ),
+              );
+            }
+          });
     } else {
       // Prompt the user to go to settings to enable permissons
       return Center(
