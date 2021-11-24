@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -15,6 +17,13 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   bool permission = false;
   late Future<Position> pos;
+  StreamSubscription<Position> posStream = Geolocator.getPositionStream(
+          desiredAccuracy: LocationAccuracy.best, distanceFilter: 10)
+      .listen((Position position) {
+    print(position == null
+        ? 'Unknown'
+        : position.latitude.toString() + ', ' + position.longitude.toString());
+  });
 
   @override
   void initState() {
