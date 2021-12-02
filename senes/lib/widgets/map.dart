@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:senes/route_point.dart';
+import 'package:senes/helpers/route_point.dart';
 
 class MapWidget extends StatefulWidget {
   const MapWidget(this.url, this.token, {Key? key}) : super(key: key);
@@ -22,6 +22,8 @@ class _MapWidgetState extends State<MapWidget> {
   List<RoutePoint> points = [];
 
   // Automatically get coordinates when the device moves more than 15m
+  // I think this will need to move elsewhere at some point if we want to
+  // still track the route in the background
   StreamSubscription<Position> posStream = Geolocator.getPositionStream(
           desiredAccuracy: LocationAccuracy.best, distanceFilter: 15)
       .listen((Position position) {});

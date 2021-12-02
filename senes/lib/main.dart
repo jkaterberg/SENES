@@ -1,15 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:senes/map_widget.dart';
+import 'package:senes/widgets/map.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
-  runApp(const MyApp());
+Future main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  final String url = 'MAPBOX_URL_HERE';
-  final String token = 'MAPBOX_ACCESS_TOKEN_HERE';
+  MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -19,7 +19,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MapWidget(url, token),
+      home: Scaffold(
+        body: MapWidget(dotenv.env['MAP_URL']!, dotenv.env['MAP_TOKEN']!),
+      ),
     );
   }
 }
