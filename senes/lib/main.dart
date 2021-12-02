@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:senes/widgets/map.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

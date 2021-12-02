@@ -36,8 +36,8 @@ class _MapWidgetState extends State<MapWidget> {
           if (permission) {
             pos = Geolocator.getCurrentPosition(
                 desiredAccuracy: LocationAccuracy.best);
-            pos.then((value) => points
-                .add(RoutePoint(LatLng(value.latitude, value.longitude))));
+            pos.then((value) => points.add(RoutePoint(
+                LatLng(value.latitude, value.longitude), value.altitude)));
           }
         }));
     super.initState();
@@ -46,9 +46,10 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   Widget build(BuildContext context) {
     posStream.onData((data) => setState(() {
-          points.add(RoutePoint(LatLng(data.latitude, data.longitude)));
+          points.add(
+              RoutePoint(LatLng(data.latitude, data.longitude), data.altitude));
           _controller.move(points.last.latlng, _controller.zoom);
-          print(points.last.latlng.toString());
+          print(points.last);
         }));
 
     // Ensure proper permissions ahve been granted before showing the map
