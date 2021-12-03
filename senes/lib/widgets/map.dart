@@ -44,12 +44,17 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     posStream.onData((data) => setState(() {
           points.add(
               RoutePoint(LatLng(data.latitude, data.longitude), data.altitude));
-          _controller.move(points.last.latlng, _controller.zoom);
           print(points.last);
+          _controller.move(points.last.latlng, _controller.zoom);
         }));
 
     // Ensure proper permissions ahve been granted before showing the map
@@ -64,6 +69,7 @@ class _MapWidgetState extends State<MapWidget> {
                   options: MapOptions(
                       center: points.last.latlng,
                       maxZoom: 18.4,
+                      zoom: 20,
                       controller: _controller,
                       onMapCreated: (c) {
                         _controller = c;
@@ -90,7 +96,7 @@ class _MapWidgetState extends State<MapWidget> {
                               },
                             );
                           });
-                    }))
+                    })),
                   ]);
             } else {
               //return loading screen
