@@ -28,6 +28,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   flutter_dotenv: ^5.0.2
+  http: any
   flutter_map: ^0.14.0
   geolocator: ^7.7.1
   latlong: any
