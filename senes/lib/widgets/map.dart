@@ -30,6 +30,8 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   void initState() {
+    //Permissions should be checked before app starts
+    // Perhaps be better to check for boolean flag set from that?
     _checkPermissions().then((value) => setState(() {
           permission = value;
 
@@ -45,6 +47,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   void dispose() {
+    posStream.cancel();
     super.dispose();
   }
 
