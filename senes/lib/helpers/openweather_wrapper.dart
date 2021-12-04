@@ -4,10 +4,29 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart';
 
 class Weather {
-  static var baseURL = "http://api.openweathermap.org";
+  static const String _baseURL = "api.openweathermap.org";
+  Weather(this.temp, this.clouds, this.pressure, this.humidity, this.wind);
+  double? temp;
+  String? clouds;
+  int? pressure;
+  int? humidity;
+  Map<dynamic, dynamic>? wind;
 
-  static Future<Map<dynamic, dynamic>> getCurrent(LatLng latlng) async {
-    Uri url = Uri.http(baseURL, "/data/2.5/weather", {
+  Weather.fromJSON(Map<dynamic, dynamic> weather) {
+    temp = weather['main']['temp'];
+    clouds = weather['weather'][0]['description'];
+    pressure = weather['main']['pressure'];
+    humidity = weather['main']['humidity'];
+    wind = weather['wind'];
+  }
+
+  @override
+  String toString() {
+    return "$temp $clouds $pressure $humidity $wind";
+  }
+
+  static Future<Weather> getCurrent(LatLng latlng) async {
+    Uri url = Uri.http(_baseURL, "/data/2.5/weather", {
       "lat": latlng.latitude.toString(),
       "lon": latlng.longitude.toString(),
       "appid": dotenv.env["WEATHER_KEY"]
@@ -16,7 +35,7 @@ class Weather {
     http.Response res = await http.get(url);
     if (res.statusCode == 200) {
       Map<dynamic, dynamic> body = jsonDecode(res.body);
-      return body;
+      return Weather.fromJSON(body);
     } else {
       throw res.statusCode;
     }
