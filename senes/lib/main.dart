@@ -1,3 +1,4 @@
+//@dart=2.10
 import 'package:flutter/material.dart';
 import 'package:senes/pages/tracker.dart';
 import 'package:senes/helpers/location_helper.dart';
@@ -15,7 +16,7 @@ Future main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp();
 
   // This widget is the root of your application.
   @override

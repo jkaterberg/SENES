@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:senes/helpers/route_point.dart';
 
 class MapWidget extends StatefulWidget {
@@ -26,8 +24,6 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.points.last);
-
     if (built) {
       controller.move(widget.points.last.latlng, controller.zoom);
     }
