@@ -15,26 +15,38 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            decoration: const BoxDecoration(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
                 image: DecorationImage(
-                    //Update the yaml file to have an asset: - free.jp
-                    image: AssetImage("free.jpg"),
-                    fit: BoxFit.cover)),
-            child: Column(children: <Widget>[
-              ElevatedButton(
-                child: const Text("Login"),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-              ),
-              ElevatedButton(
-                child: Text("Signup"),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignupPage()));
-                },
-              )
-            ])));
+                    fit: BoxFit.fill, image: AssetImage('free.jpg'))),
+            child: Center(
+                child: ButtonBar(buttonPadding: EdgeInsets.all(150), children: [
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ElevatedButton(
+                          child: const Text("Login"),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()));
+                          },
+                        )),
+                    ElevatedButton(
+                      child: Text("Signup"),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignupPage()));
+                      },
+                    )
+                  ])
+            ]))));
   }
 }

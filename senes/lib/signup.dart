@@ -16,7 +16,16 @@ class SignupPage extends StatelessWidget {
     return Scaffold(
         body:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Column(children: const [
+      Column(children: [
+        Container(
+            child: Align(
+                alignment: Alignment(-1, -1),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () async {
+                    Navigator.pop(context, true);
+                  },
+                ))),
         Image(
             image: NetworkImage(
                 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.onlinewebfonts.com%2Fsvg%2Fimg_427844.png&f=1&nofb=1'),
