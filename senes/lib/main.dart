@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:senes/welcome_page.dart';
+import 'signup.dart';
+import 'login.dart';
+import 'welcome_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SENES',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: WelcomePage(),
+      home: LoginPage(),
     );
   }
 }
