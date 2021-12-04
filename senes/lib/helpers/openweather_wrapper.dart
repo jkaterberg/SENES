@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart';
 
 class Weather {
-  static var baseURL = "api.openweathermap.org";
+  static const String _baseURL = "api.openweathermap.org";
   Weather(this.temp, this.clouds, this.pressure, this.humidity, this.wind);
   double? temp;
   String? clouds;
@@ -26,7 +26,7 @@ class Weather {
   }
 
   static Future<Weather> getCurrent(LatLng latlng) async {
-    Uri url = Uri.http(baseURL, "/data/2.5/weather", {
+    Uri url = Uri.http(_baseURL, "/data/2.5/weather", {
       "lat": latlng.latitude.toString(),
       "lon": latlng.longitude.toString(),
       "appid": dotenv.env["WEATHER_KEY"]

@@ -74,7 +74,7 @@ class _TrackerState extends State<Tracker> {
                   SizedBox(
                     height: 562,
                     child: MapWidget(widget.points, dotenv.env["MAP_URL"]!,
-                        dotenv.env["MAP_TOKEN"]!, true),
+                        dotenv.env["MAP_TOKEN"]!, widget.points.last.latlng),
                   ),
                   SizedBox(
                     height: 100,

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:senes/helpers/route_point.dart';
 
 class MapWidget extends StatefulWidget {
@@ -9,7 +10,7 @@ class MapWidget extends StatefulWidget {
   final String url;
   final String token;
   List<RoutePoint> points;
-  final bool center;
+  final LatLng center;
   @override
   _MapWidgetState createState() => _MapWidgetState();
 }
@@ -25,7 +26,7 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   Widget build(BuildContext context) {
     if (built) {
-      controller.move(widget.points.last.latlng, controller.zoom);
+      controller.move(widget.center, controller.zoom);
     }
 
     built = true;
@@ -33,7 +34,7 @@ class _MapWidgetState extends State<MapWidget> {
     return FlutterMap(
         mapController: controller,
         options: MapOptions(
-          center: widget.points.last.latlng,
+          center: widget.center,
           maxZoom: 18.4,
           zoom: 20,
         ),
