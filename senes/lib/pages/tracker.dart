@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:senes/helpers/route_point.dart';
+import 'package:senes/helpers/workout.dart';
 import 'package:senes/widgets/altitude_graph.dart';
 import 'package:senes/widgets/map.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:senes/helpers/openweather_wrapper.dart';
 import 'package:senes/helpers/globals.dart';
+import 'package:senes/helpers/database_helper.dart';
 
 class Tracker extends StatefulWidget {
   Tracker({Key? key}) : super(key: key);
@@ -57,7 +59,16 @@ class _TrackerState extends State<Tracker> {
                       print(
                           await Weather.getCurrent(widget.points.first.latlng));
 
-                      //TODO: Save info to database, return to main page
+                      Workout workout = Workout(
+                          startTime,
+                          DateTime.now(),
+                          await Weather.getCurrent(widget.points.first.latlng),
+                          widget.points);
+
+                      await DBHelper.dbHelper.insertWorkout(workout);
+                      await DBHelper.dbHelper.getWorkout(workout.workoutID);
+
+                      //TODO navigate back to homepage
                     },
                     icon: const Icon(Icons.save),
                   ),

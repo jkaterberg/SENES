@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:uuid/uuid.dart';
 
 class Weather {
   static const String _baseURL = "api.openweathermap.org";
@@ -11,9 +12,10 @@ class Weather {
   int? pressure;
   int? humidity;
   Map<dynamic, dynamic>? wind;
+  String weatherid = Uuid().v4();
 
   Weather.fromJSON(Map<dynamic, dynamic> weather) {
-    temp = weather['main']['temp'];
+    temp = weather['main']['temp'].toDouble();
     clouds = weather['weather'][0]['description'];
     pressure = weather['main']['pressure'];
     humidity = weather['main']['humidity'];

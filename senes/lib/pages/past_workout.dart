@@ -15,7 +15,7 @@ class PastWorkout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateFormat date = DateFormat('yyyy-MM-dd');
-    DateFormat time = DateFormat('hh:mm');
+    DateFormat time = DateFormat('HH:mm');
     return FutureBuilder(
         future: getWorkout(),
         builder: (BuildContext context, AsyncSnapshot<Workout> snapshot) {
@@ -85,10 +85,10 @@ class PastWorkout extends StatelessWidget {
   }
 
   Future<Workout> getWorkout() async {
-    return Workout(
-        DateTime.now(),
-        DateTime.now(),
-        Weather(275.7, "few clouds", 1015, 75, {"speed": 4.63, "deg": 230}),
-        [RoutePoint(LatLng(43.9373, -78.8890), 145.0)]);
+    return Workout(DateTime.now(), DateTime.now(),
+        Weather(275.7, "few clouds", 1015, 75, {"speed": 4.63, "deg": 230}), [
+      RoutePoint(LatLng(43.9373, -78.8890), 145.0),
+      RoutePoint(LatLng(43.937, -78.8895), 140.0)
+    ]);
   }
 }

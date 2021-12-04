@@ -4,6 +4,7 @@ class RoutePoint {
   RoutePoint(this.latlng, this.altitude) {
     time = DateTime.now();
   }
+  RoutePoint.withTime(this.latlng, this.altitude, this.time);
 
   LatLng latlng;
   double altitude;

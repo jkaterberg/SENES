@@ -17,4 +17,9 @@ class Workout {
         milliseconds:
             endTime.millisecondsSinceEpoch - startTime.millisecondsSinceEpoch);
   }
+
+  @override
+  String toString() {
+    return "{workoutid: $workoutID, startTime: $startTime, endTime: $endTime, duration: $duration, weather: $weather, route: $route}";
+  }
 }
