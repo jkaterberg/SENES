@@ -3,13 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:senes/helpers/database_helper.dart';
 import 'package:senes/helpers/future_workout.dart';
 
-/*
-Basic welcome page. Image is a placeholder, text inputs can be changed around depending on what we decide we need
-TODO:
-  - Take input when button pressed
-  - Validate inputs
-  - Insert validated data into the database
-*/
 class ScheduleWorkoutPage extends StatefulWidget {
   static const String routename = '/schedule';
 
@@ -24,6 +17,8 @@ class _ScheduleWorkoutPageState extends State<ScheduleWorkoutPage> {
   final TextEditingController noteController = TextEditingController();
   final TextEditingController goalController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  //TODO I think somewhere in here might be the best place for notifications
 
   @override
   Widget build(BuildContext context) {

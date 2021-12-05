@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:senes/helpers/database_helper.dart';
+import 'package:senes/helpers/future_workout.dart';
 import 'package:senes/helpers/workout.dart';
+import 'package:senes/pages/newwp.dart';
 import 'package:senes/pages/past_workout.dart';
 import 'package:senes/pages/tracker.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -70,7 +74,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
           appBar: AppBar(
-            title: const Text('S.E.N.E.S'),
+            title: const Text('SENES'),
             bottom: TabBar(controller: _tabController, tabs: const [
               Tab(
                 icon: Icon(Icons.favorite_border_outlined),
@@ -81,6 +85,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 text: ('SCHEDULED'),
               )
             ]),
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              if (_tabController.index == 0) {
+              } else if (_tabController.index == 1) {
+                Navigator.pushNamed(context, ScheduleWorkoutPage.routename);
+                setState(() => print("help"));
+              }
+            },
           ),
           body: TabBarView(
             controller: _tabController,
@@ -100,19 +114,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     );
                   }),
               // for scheduled workouts
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: dummyWorkoutList
-                      .length, // set to scheduledWorkouts for production
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      leading: const Icon(Icons.add_task_outlined),
-                      trailing: const Text(
-                          "Future duration"), // from scheduledWorkouts
-                      title: Text(
-                          "workout date ($index)"), // from scheduledWorkouts
-                    );
-                  }),
+              FutureBuilder(
+                  future: DBHelper.dbHelper.getFutures(),
+                  builder:
+                      (context, AsyncSnapshot<List<FutureWorkout>> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                          padding: const EdgeInsets.all(8),
+                          itemCount: snapshot.data!
+                              .length, // set to scheduledWorkouts for production
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              leading: const Icon(Icons.add_task_outlined),
+                              trailing: Text(snapshot.data![index].goal
+                                  .toString()
+                                  .split('.')
+                                  .first
+                                  .padLeft(8, "0")),
+                              title: Text(DateFormat('yyyy-MM-dd').format(
+                                  snapshot.data![index]
+                                      .time)), // from scheduledWorkouts
+                            );
+                          });
+                    } else {
+                      return const SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: CircularProgressIndicator());
+                    }
+                  })
             ],
           ));
     } else {

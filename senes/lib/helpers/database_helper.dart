@@ -88,6 +88,25 @@ class DBHelper {
     await db.close();
   }
 
+  Future<List<FutureWorkout>> getFutures() async {
+    /// Retrieve all scheduled workouts
+
+    Database db = await _createDatabase();
+
+    List<Map<String, dynamic>> data = await db.query('futureworkout');
+
+    List<FutureWorkout> futures = [];
+    for (Map<String, dynamic> future in data) {
+      futures.add(FutureWorkout(
+          DateTime.fromMillisecondsSinceEpoch(future['time']),
+          Duration(minutes: future['goal']),
+          future['note']));
+    }
+    await db.close();
+
+    return futures;
+  }
+
   Future<FutureWorkout?> getFuture(String id) async {
     /// Retrieve scheduled workout from database
     ///
@@ -99,6 +118,8 @@ class DBHelper {
 
     List<Map<String, dynamic>> data = await db
         .query('futureworkout', where: "workoutid = ?", whereArgs: [id]);
+
+    await db.close();
 
     if (data.isNotEmpty) {
       return FutureWorkout(data[0]['time'], data[0]['goal'], data[0]['notes']);
