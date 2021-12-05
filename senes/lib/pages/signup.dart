@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:senes/helpers/database_helper.dart';
 import 'package:senes/helpers/user.dart';
-import 'package:senes/pages/home_page.dart';
-
-/*
-Basic welcome page. Image is a placeholder, text inputs can be changed around depending on what we decide we need
-TODO:
-  - Take input when button pressed
-  - Validate inputs
-  - Insert validated data into the database
-*/
+import 'package:senes/pages/home.dart';
 
 class SignupPage extends StatelessWidget {
+  // Signup page. Should only be shown first time app is launched
+
   SignupPage({Key? key}) : super(key: key);
 
+  // Route for navigation
   static const routename = '/signup';
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    // Controllers for each form
     TextEditingController fname = TextEditingController();
     TextEditingController lname = TextEditingController();
     TextEditingController age = TextEditingController();

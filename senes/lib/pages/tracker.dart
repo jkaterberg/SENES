@@ -13,41 +13,41 @@ import 'package:senes/helpers/globals.dart';
 import 'package:senes/helpers/database_helper.dart';
 
 class Tracker extends StatefulWidget {
+  /// Page for tracking location during a workout
+
   Tracker({Key? key}) : super(key: key);
 
+  // Route for navigation
   static const String routename = '/tracker';
 
-  List<RoutePoint> points = [];
-  late StreamSubscription subscription;
+  // Member variables
 
   @override
   _TrackerState createState() => _TrackerState();
 }
 
 class _TrackerState extends State<Tracker> {
+  // Member variables
   bool ready = false;
+  List<RoutePoint> points = [];
 
+  // Things for triggering events whenever user moves 15m
   Stream<Position> posStream = Geolocator.getPositionStream(
       desiredAccuracy: LocationAccuracy.best, distanceFilter: 15);
   late StreamSubscription subscription;
 
   @override
-  void dispose() {
-    print("disposed");
-    subscription.cancel();
-    super.dispose();
-  }
-
-  @override
   void initState() {
+    /// Initialise the page. Subscribe to position stream to get data whenever
+    /// user moves
     subscription = posStream.listen((data) {
       setState(() {
         RoutePoint last =
             RoutePoint(LatLng(data.latitude, data.longitude), data.altitude);
 
-        if (widget.points.isEmpty || widget.points.last.latlng != last.latlng) {
-          widget.points.add(last);
-          print(widget.points.last);
+        // store new location point
+        if (points.isEmpty || points.last.latlng != last.latlng) {
+          points.add(last);
         }
         ready = true;
       });
@@ -57,10 +57,18 @@ class _TrackerState extends State<Tracker> {
   }
 
   @override
+  void dispose() {
+    // Get rid of subscription
+    subscription.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Begin collecting location information
+    // Begin collecting location information if permission is granted
     if (Global.LOCATION_PERMISSION) {
       return FutureBuilder(
+          // wait until at least one point is collected
           future: posStream.first,
           builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
             if (snapshot.hasData && ready) {
@@ -69,21 +77,26 @@ class _TrackerState extends State<Tracker> {
 
               return Scaffold(
                 appBar: AppBar(title: const Text("Tracking Workout"), actions: [
+                  // Button to save the workout
                   IconButton(
                     onPressed: () async {
-                      // Save the workout information, return to main screen
+                      // build workout object
                       Workout workout = Workout(
                           startTime,
                           DateTime.now(),
-                          await Weather.getCurrent(widget.points.first.latlng),
-                          widget.points);
+                          await Weather.getCurrent(points.first.latlng),
+                          points);
 
+                      // save to db
                       await DBHelper.dbHelper.insertWorkout(workout);
 
+                      // go back to previous page
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.save),
                   ),
+
+                  // Cancel the current workout without saving
                   IconButton(
                       onPressed: () {
                         //cancel save workout
@@ -92,14 +105,16 @@ class _TrackerState extends State<Tracker> {
                       icon: const Icon(Icons.cancel)),
                 ]),
                 body: Column(children: [
+                  // Map that autoupdates with each point
                   SizedBox(
                     height: 562,
-                    child: MapWidget(widget.points, dotenv.env["MAP_URL"]!,
-                        dotenv.env["MAP_TOKEN"]!, widget.points.last.latlng),
+                    child: MapWidget(points, dotenv.env["MAP_URL"]!,
+                        dotenv.env["MAP_TOKEN"]!, points.last.latlng),
                   ),
+                  // Graph the plots altitude in real time
                   SizedBox(
                     height: 100,
-                    child: AltitudeChart(widget.points),
+                    child: AltitudeChart(points),
                   ),
                 ]),
               );

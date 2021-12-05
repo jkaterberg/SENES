@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:senes/helpers/database_helper.dart';
-import 'package:senes/helpers/openweather_wrapper.dart';
-import 'package:senes/helpers/route_point.dart';
 import 'package:senes/helpers/workout.dart';
 import 'package:senes/widgets/altitude_graph.dart';
 import 'package:intl/intl.dart';
@@ -11,14 +8,13 @@ import 'package:senes/widgets/map.dart';
 
 class PastWorkout extends StatelessWidget {
   static const String routename = '/past';
-  PastWorkout({Key? key}) : super(key: key);
+  const PastWorkout({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     //get workoutid from navigator arguments
     // ie. Navigator.pushNamed(context, PastWorkout.routename, arguments: <workoutid>);
     final String args = ModalRoute.of(context)!.settings.arguments.toString();
-    print(args);
 
     DateFormat date = DateFormat('yyyy-MM-dd');
     DateFormat time = DateFormat('HH:mm');

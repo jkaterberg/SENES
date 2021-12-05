@@ -5,8 +5,12 @@ import 'package:latlong2/latlong.dart';
 import 'package:senes/helpers/route_point.dart';
 
 class MapWidget extends StatefulWidget {
+  /// Widget that will plot a list of points onto a map
+
   MapWidget(this.points, this.url, this.token, this.center, {Key? key})
       : super(key: key);
+
+  // Member variables
   final String url;
   final String token;
   List<RoutePoint> points;
@@ -18,17 +22,13 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   final MapController controller = MapController();
   bool built = false;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
+    // Avoid a LateSubstantiationError
     if (built) {
       controller.move(widget.center, controller.zoom);
     }
-
     built = true;
 
     return FlutterMap(
@@ -39,10 +39,12 @@ class _MapWidgetState extends State<MapWidget> {
           zoom: 20,
         ),
         layers: [
+          // Layer for map. Uses MapBox. Credentials are put in .env
           TileLayerOptions(urlTemplate: widget.url, additionalOptions: {
             'accessToken': widget.token,
             'id': 'mapbox.satellite'
           }),
+          // Layer for point markers
           MarkerLayerOptions(
               markers: List<Marker>.generate(widget.points.length, (int i) {
             return Marker(

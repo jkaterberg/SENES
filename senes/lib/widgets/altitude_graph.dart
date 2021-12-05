@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:senes/helpers/route_point.dart';
 
 class AltitudeChart extends StatelessWidget {
-  AltitudeChart(this.points, {Key key}) : super(key: key);
+  /// Widget that plots the altitude at each point in a route
+
   List<RoutePoint> points;
+
+  AltitudeChart(this.points, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Create series for the chart
     Series<RoutePoint, int> altitude = Series<RoutePoint, int>(
         id: "Altitude",
         domainFn: (RoutePoint point, _) =>
@@ -20,6 +24,7 @@ class AltitudeChart extends StatelessWidget {
         colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
         data: points);
 
+    // draw the chart
     return LineChart(
       [altitude],
       behaviors: [

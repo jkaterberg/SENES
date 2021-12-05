@@ -1,7 +1,13 @@
 import 'package:geolocator/geolocator.dart';
 
 class LocationHelper {
+  /// Class to make doing everything with locations a little easier
+  /// Potentially move all the stream and stream subscription things here?
+
   static Future<bool> checkPermissions() async {
+    /// Check app permissions to ensure that they are sufficient for the
+    /// applications use. If they are not, prompt the user to allow sufficient
+    /// permissions
     bool serviceEnabled;
     LocationPermission permission;
 

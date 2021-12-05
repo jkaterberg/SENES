@@ -1,15 +1,20 @@
+// plugin imports
 import 'package:latlong2/latlong.dart';
-import 'package:senes/helpers/future_workout.dart';
-import 'package:senes/helpers/openweather_wrapper.dart';
-import 'package:senes/helpers/route_point.dart';
-import 'package:senes/helpers/user.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 
-import 'workout.dart';
+// helper objects
+import 'package:senes/helpers/future_workout.dart';
+import 'package:senes/helpers/openweather_wrapper.dart';
+import 'package:senes/helpers/route_point.dart';
+import 'package:senes/helpers/user.dart';
+import 'package:senes/helpers/workout.dart';
 
 class DBHelper {
+  /// Object to help work with the database
+  /// Has getters, setters and removers for the major tables.
+
   DBHelper._privateConstructor();
 
   static DBHelper dbHelper = DBHelper._privateConstructor();
@@ -22,8 +27,13 @@ class DBHelper {
     return _database;
   }
 
-  //Creates database object
   Future<Database> _createDatabase() async {
+    /// Create a database object
+    /// If database doesn't exist, it will create all the tables. Otherwise it
+    /// will access an existing database
+    ///
+    /// return:
+    /// Future<Database>    -   Future for database object
     return await openDatabase(join(await getDatabasesPath(), 'senes.db'),
         onCreate: (Database db, int version) {
       for (String table in _createDatabaseSQL) {
@@ -32,13 +42,16 @@ class DBHelper {
     }, version: 1);
   }
 
-  // Deletes database
   void _deleteDatabase() async {
+    /// DANGEROUS: DELETES ALL TABLES AND ALL DATA STORED IN THE DATABASE
     deleteDatabase(join(await getDatabasesPath(), 'senes.db'));
   }
 
-  // Delete past workout from database
   Future<void> deletePastWorkout(String id) async {
+    /// Deletes specified past workout from database
+    ///
+    /// Parameters:
+    /// String id   -   unique identifier of desired database
     //connect to db
     Database db = await _createDatabase();
 
@@ -57,6 +70,7 @@ class DBHelper {
     //query the database
     List<Map<String, dynamic>> data = await db.query('user');
 
+    // Construct and return user object
     if (data.isNotEmpty) {
       return User(data[0]['name'], data[0]['age'], data[0]['userid']);
     }
@@ -98,18 +112,31 @@ class DBHelper {
   }
 
   Future<void> deleteFutureWorkout(String id) async {
+    /// Removes scheduled workout from database asynchronously
+    ///
+    /// Parameters:
+    ///  String id    -   Unique identifier for FutureWorkout object
+
+    // Connect to database
     Database db = await _createDatabase();
 
+    //Delete specified object from table
     db.delete('futureworkout', where: 'workoutid = ?', whereArgs: [id]);
   }
 
   Future<List<FutureWorkout>> getFutures() async {
-    /// Retrieve all scheduled workouts
+    /// Retrieve all scheduled workouts in database
+    ///
+    /// Return:
+    ///  List of FutureWorkout objects
 
+    // Connect to database
     Database db = await _createDatabase();
 
+    // Perform query
     List<Map<String, dynamic>> data = await db.query('futureworkout');
 
+    // Construct object from query result
     List<FutureWorkout> futures = [];
     for (Map<String, dynamic> future in data) {
       futures.add(FutureWorkout.existing(
@@ -119,6 +146,7 @@ class DBHelper {
           future['workoutid']));
     }
 
+    // return list of workouts
     return futures;
   }
 
@@ -127,26 +155,33 @@ class DBHelper {
     ///
     /// Parameters:
     /// String id   -   id of scheduled workout
+    ///
+    /// Return
+    /// FutureWorkout
 
     //Connect to db
     Database db = await _createDatabase();
 
+    //Perform query
     List<Map<String, dynamic>> data = await db
         .query('futureworkout', where: "workoutid = ?", whereArgs: [id]);
 
     await db.close();
 
+    // Construct object from query results
     if (data.isNotEmpty) {
       return FutureWorkout(data[0]['time'], data[0]['goal'], data[0]['notes']);
-    } else {
-      return null;
     }
+    return null;
   }
 
   Future<void> insertWorkout(Workout data) async {
     /// insertWorkout(Workout data)
     /// Inserts the given workout into the database
     /// All info stored by workout object is put into appropriate database tables
+    ///
+    /// Parameters:
+    /// Workout data    -   Workout object that holds all relevant data
 
     //Connect to db
     Database db = await _createDatabase();
@@ -160,6 +195,7 @@ class DBHelper {
     int pressure = data.weather.pressure!;
     int humidity = data.weather.humidity!;
 
+    //Create weather tuple
     await db.insert('weather', {
       'weatherid': wid,
       'clouds': clouds,
@@ -171,15 +207,16 @@ class DBHelper {
     });
 
     String rid = const Uuid().v4();
-
-    //Things to go into points table
+    // Generate each point individually
     for (RoutePoint point in data.route) {
+      //Things for point to store
       String pid = const Uuid().v4();
       double latitude = point.latlng.latitude;
       double longitude = point.latlng.longitude;
       double altitude = point.altitude;
       int time = point.time.millisecondsSinceEpoch;
 
+      // Construct and insert point tuple into table
       await db.insert('points', {
         'pointid': pid,
         'routeid': rid,
@@ -196,6 +233,7 @@ class DBHelper {
     int end = data.endTime.millisecondsSinceEpoch;
     int duration = data.duration.inMilliseconds;
 
+    // Construct and insert workout tuple
     await db.insert('pastworkout', {
       'workoutid': id,
       'start': start,
@@ -209,13 +247,22 @@ class DBHelper {
   }
 
   Future<List<Map<String, dynamic>>> getPrevious() async {
+    /// Retrieve all saved workouts that have been completed
+    ///
+    /// Return:
+    /// List<Map<String,dynamic>> -  Map of relevant information for the workout
+    ///     Has indices 'workoutid', 'start', 'duration'
+
+    //Connect to db
     Database db = await _createDatabase();
 
+    // query db for all past workouts
     List<Map<String, dynamic>> data = await db
         .query('pastworkout', columns: ['workoutid', 'start', 'duration']);
 
     await db.close();
 
+    // return list
     return data;
   }
 
@@ -223,6 +270,8 @@ class DBHelper {
     ///getWorkout(String id)
     ///Fetches workout with specified id from database
     ///returns Future for Workout object
+
+    // connect to db
     Database db = await _createDatabase();
 
     //get data from workout table
@@ -273,6 +322,10 @@ class DBHelper {
     }
   }
 
+  // List of all queries required to generate the database
+  // Database was designed in DB Browser for SQLite
+  // Much of the sql was also generated using this program, although
+  // modifications were made to make it play nice with sqflite
   final List<String> _createDatabaseSQL = [
     """
 CREATE TABLE "user" (
