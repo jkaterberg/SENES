@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:senes/helpers/database_helper.dart';
 import 'package:senes/helpers/openweather_wrapper.dart';
 import 'package:senes/helpers/route_point.dart';
 import 'package:senes/helpers/workout.dart';
@@ -9,16 +10,21 @@ import 'package:intl/intl.dart';
 import 'package:senes/widgets/map.dart';
 
 class PastWorkout extends StatelessWidget {
-  PastWorkout(this.workoutID, {Key? key}) : super(key: key);
-  String workoutID;
+  static const String routename = '/past';
+  PastWorkout({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    //get workoutid from navigator arguments
+    // ie. Navigator.pushNamed(context, PastWorkout.routename, arguments: <workoutid>);
+    final String args = ModalRoute.of(context)!.settings.arguments.toString();
+    print(args);
+
     DateFormat date = DateFormat('yyyy-MM-dd');
     DateFormat time = DateFormat('HH:mm');
     return FutureBuilder(
-        future: getWorkout(),
-        builder: (BuildContext context, AsyncSnapshot<Workout> snapshot) {
+        future: DBHelper.dbHelper.getWorkout(args),
+        builder: (BuildContext context, AsyncSnapshot<Workout?> snapshot) {
           if (snapshot.hasData) {
             Workout data = snapshot.data!;
             return Scaffold(
@@ -82,13 +88,5 @@ class PastWorkout extends StatelessWidget {
             );
           }
         });
-  }
-
-  Future<Workout> getWorkout() async {
-    return Workout(DateTime.now(), DateTime.now(),
-        Weather(275.7, "few clouds", 1015, 75, {"speed": 4.63, "deg": 230}), [
-      RoutePoint(LatLng(43.9373, -78.8890), 145.0),
-      RoutePoint(LatLng(43.937, -78.8895), 140.0)
-    ]);
   }
 }

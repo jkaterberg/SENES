@@ -12,7 +12,7 @@ class Weather {
   int? pressure;
   int? humidity;
   Map<dynamic, dynamic>? wind;
-  String weatherid = Uuid().v4();
+  String weatherid = const Uuid().v4();
 
   Weather.fromJSON(Map<dynamic, dynamic> weather) {
     temp = weather['main']['temp'].toDouble();

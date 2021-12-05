@@ -1,6 +1,8 @@
 //@dart=2.10
 import 'package:flutter/material.dart';
+import 'package:senes/pages/newwp.dart';
 import 'package:senes/pages/past_workout.dart';
+import 'package:senes/pages/signup.dart';
 import 'package:senes/pages/tracker.dart';
 import 'package:senes/pages/home_page.dart';
 import 'package:senes/helpers/location_helper.dart';
@@ -18,19 +20,25 @@ Future main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp();
+  const MyApp({Key key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        body: HomePage(),
-      ),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child),
+        initialRoute: ScheduleWorkoutPage.routename,
+        routes: {
+          Tracker.routename: (context) => Tracker(),
+          PastWorkout.routename: (context) => PastWorkout(),
+          SignupPage.routename: (context) => const SignupPage(),
+          ScheduleWorkoutPage.routename: (context) => ScheduleWorkoutPage()
+        });
   }
 }
