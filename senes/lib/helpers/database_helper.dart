@@ -1,4 +1,5 @@
 import 'package:latlong2/latlong.dart';
+import 'package:senes/helpers/future_workout.dart';
 import 'package:senes/helpers/openweather_wrapper.dart';
 import 'package:senes/helpers/route_point.dart';
 import 'package:sqflite/sqflite.dart';
@@ -35,7 +36,46 @@ class DBHelper {
     deleteDatabase(join(await getDatabasesPath(), 'senes.db'));
   }
 
-  Future<void> insertWorkout(Workout data) async {
+  void insertFuture(FutureWorkout data) async {
+    /// Inserts a new Scheduled workout into the database
+    ///
+    /// Parameters:
+    /// FutureWorkout data  -   data for scheduled workout
+
+    //Connect to db
+    Database db = await _createDatabase();
+
+    // Insert into db
+    await db.insert('futureworkout', {
+      'workoutid': data.id,
+      'time': data.time,
+      'route': data.route,
+    });
+
+    //cleanup
+    await db.close();
+  }
+
+  Future<FutureWorkout?> getFuture(String id) async {
+    /// Retrieve scheduled workout from database
+    ///
+    /// Parameters:
+    /// String id   -   id of scheduled workout
+
+    //Connect to db
+    Database db = await _createDatabase();
+
+    List<Map<String, dynamic>> data = await db
+        .query('futureworkout', where: "workoutid = ?", whereArgs: [id]);
+
+    if (data.isNotEmpty) {
+      return FutureWorkout(data[0]['time']);
+    } else {
+      return null;
+    }
+  }
+
+  void insertWorkout(Workout data) async {
     /// insertWorkout(Workout data)
     /// Inserts the given workout into the database
     /// All info stored by workout object is put into appropriate database tables
@@ -127,6 +167,9 @@ class DBHelper {
       // get data for route
       List<Map<String, dynamic>> routeData = await db
           .query('points', where: 'routeid = ?', whereArgs: [data['route']]);
+
+      //close db
+      await db.close();
 
       //Generate list of points
       List<RoutePoint> points = List.generate(routeData.length, (int i) {

@@ -65,7 +65,7 @@ class _TrackerState extends State<Tracker> {
                           await Weather.getCurrent(widget.points.first.latlng),
                           widget.points);
 
-                      await DBHelper.dbHelper.insertWorkout(workout);
+                      DBHelper.dbHelper.insertWorkout(workout);
                       await DBHelper.dbHelper.getWorkout(workout.workoutID);
 
                       //TODO navigate back to homepage
