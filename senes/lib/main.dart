@@ -33,8 +33,9 @@ class MyApp extends StatelessWidget {
         builder: (context, child) => MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
             child: child),
-        initialRoute: ScheduleWorkoutPage.routename,
+        initialRoute: HomePage.routename,
         routes: {
+          HomePage.routename: (context) => const HomePage(),
           Tracker.routename: (context) => Tracker(),
           PastWorkout.routename: (context) => PastWorkout(),
           SignupPage.routename: (context) => const SignupPage(),
