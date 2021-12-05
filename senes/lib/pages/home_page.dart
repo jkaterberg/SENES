@@ -68,10 +68,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           onPressed: () {
             if (_tabController.index == 0) {
               Navigator.pushNamed(context, Tracker.routename);
-              setState(() => print('help'));
+              setState(() => print('updating'));
             } else if (_tabController.index == 1) {
               Navigator.pushNamed(context, ScheduleWorkoutPage.routename);
-              setState(() => print("help"));
+              setState(() => print("updating"));
             }
           },
         ),
@@ -88,20 +88,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                            leading: const Icon(Icons.add_task_outlined),
-                            trailing: Text(Duration(
-                                    milliseconds: snapshot.data![index]
-                                        ['duration'])
-                                .toString()
-                                .split('.')
-                                .first
-                                .padLeft(8, "0")),
-                            title: Text(
-                              DateFormat('yyyy-MM-dd').format(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                      snapshot.data![index]['start'])),
-                            ) // from pastWorkoutList
-                            );
+                          leading: const Icon(Icons.add_task_outlined),
+                          trailing: Text(Duration(
+                                  milliseconds: snapshot.data![index]
+                                      ['duration'])
+                              .toString()
+                              .split('.')
+                              .first
+                              .padLeft(8, "0")),
+                          title: Text(
+                            DateFormat('yyyy-MM-dd').format(
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    snapshot.data![index]['start'])),
+                          ),
+                          subtitle: Text(DateFormat('HH:mm').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  snapshot.data![index]['start']))),
+                        );
                       });
                 } else {
                   return const SizedBox(

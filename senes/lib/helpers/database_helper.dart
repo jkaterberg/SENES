@@ -102,7 +102,6 @@ class DBHelper {
           Duration(minutes: future['goal']),
           future['note']));
     }
-    await db.close();
 
     return futures;
   }

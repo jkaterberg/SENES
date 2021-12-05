@@ -14,8 +14,11 @@ class Workout {
   Workout(this.startTime, this.endTime, this.weather, this.route) {
     workoutID = const Uuid().v4();
     duration = Duration(
-        milliseconds:
-            endTime.millisecondsSinceEpoch - startTime.millisecondsSinceEpoch);
+        milliseconds: (endTime.millisecondsSinceEpoch -
+            startTime.millisecondsSinceEpoch));
+    print(startTime.millisecondsSinceEpoch);
+    print(endTime.millisecondsSinceEpoch);
+    print(duration);
   }
 
   Workout.workout(this.startTime, this.endTime, this.weather, this.route,

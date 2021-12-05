@@ -18,10 +18,7 @@ class Tracker extends StatefulWidget {
   static const String routename = '/tracker';
 
   List<RoutePoint> points = [];
-  Stream<Position> posStream = Geolocator.getPositionStream(
-    desiredAccuracy: LocationAccuracy.best,
-    distanceFilter: 15,
-  );
+  late StreamSubscription subscription;
 
   @override
   _TrackerState createState() => _TrackerState();
@@ -29,9 +26,21 @@ class Tracker extends StatefulWidget {
 
 class _TrackerState extends State<Tracker> {
   bool ready = false;
+
+  Stream<Position> posStream = Geolocator.getPositionStream(
+      desiredAccuracy: LocationAccuracy.best, distanceFilter: 15);
+  late StreamSubscription subscription;
+
   @override
-  Widget build(BuildContext context) {
-    widget.posStream.listen((data) {
+  void dispose() {
+    print("disposed");
+    subscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    subscription = posStream.listen((data) {
       setState(() {
         RoutePoint last =
             RoutePoint(LatLng(data.latitude, data.longitude), data.altitude);
@@ -42,11 +51,17 @@ class _TrackerState extends State<Tracker> {
         }
         ready = true;
       });
-    });
+    }, cancelOnError: true);
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Begin collecting location information
     if (Global.LOCATION_PERMISSION) {
       return FutureBuilder(
-          future: widget.posStream.first,
+          future: posStream.first,
           builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
             if (snapshot.hasData && ready) {
               // Collect information about workout
@@ -91,21 +106,22 @@ class _TrackerState extends State<Tracker> {
             } else {
               //return loading screen
               return Scaffold(
+                  appBar: AppBar(),
                   body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    SizedBox(
-                        child: CircularProgressIndicator(),
-                        width: 60,
-                        height: 60),
-                    Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: Text('Loading Location...'))
-                  ],
-                ),
-              ));
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        SizedBox(
+                            child: CircularProgressIndicator(),
+                            width: 60,
+                            height: 60),
+                        Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text('Loading Location...'))
+                      ],
+                    ),
+                  ));
             }
           });
     } else {
