@@ -97,6 +97,12 @@ class DBHelper {
     await db.close();
   }
 
+  Future<void> deleteFutureWorkout(String id) async {
+    Database db = await _createDatabase();
+
+    db.delete('futureworkout', where: 'workoutid = ?', whereArgs: [id]);
+  }
+
   Future<List<FutureWorkout>> getFutures() async {
     /// Retrieve all scheduled workouts
 

@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ? const Icon(Icons.add)
               : const Icon(Icons.delete),
           onPressed: () {
-            if (_pastSelected.isNotEmpty) {
+            if (_pastSelected.isNotEmpty || _futureSelected.isNotEmpty) {
               showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
@@ -107,6 +107,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 setState(() {
                                   for (String i in _pastSelected) {
                                     DBHelper.dbHelper.deletePastWorkout(i);
+                                  }
+                                  for (String i in _futureSelected) {
+                                    DBHelper.dbHelper.deleteFutureWorkout(i);
                                   }
                                 });
                                 Navigator.pop(context, 'OK');
@@ -171,7 +174,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               context, PastWorkout.routename,
                               arguments: snapshot.data![index]['workoutid']),
                           onLongPress: () {
-                            print("loooooooooooooooooooooooooong");
                             setState(() {
                               if (!_pastSelected.contains(
                                   snapshot.data![index]['workoutid'])) {
@@ -222,7 +224,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         title: Text(DateFormat('yyyy-MM-dd')
                             .format(snapshot.data![index].time)),
                         onLongPress: () {
-                          print("loooooooooong pt 2");
                           setState(() {
                             if (!_futureSelected
                                 .contains(snapshot.data![index].id)) {
@@ -231,7 +232,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               _futureSelected.remove(snapshot.data![index].id);
                             }
                           });
-                          print(_futureSelected);
                         }, // from scheduledWorkouts
                       );
                     },
