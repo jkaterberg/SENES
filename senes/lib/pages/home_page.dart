@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:senes/helpers/workout.dart';
 import 'package:senes/pages/past_workout.dart';
+import 'package:senes/pages/tracker.dart';
 
 class HomePage extends StatefulWidget{
   HomePage({Key? key}) : super(key: key);
@@ -30,8 +31,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   Widget build(BuildContext context){
     if(dummyWorkoutList.isNotEmpty){ //reminder set to pastWorkoutList for production
       return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text('Track activity'),
+              onTap: () {
+                Navigator.push(context, 
+                MaterialPageRoute(builder: (context) => Tracker()),
+                );
+              }
+            )
+          ],),
+      ),
       appBar: AppBar(
-        leading: Icon(Icons.menu), // To do: add clickable element
         title: const Text('S.E.N.E.S'),
         bottom: TabBar(
           controller: _tabController,
