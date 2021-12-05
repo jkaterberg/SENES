@@ -100,7 +100,7 @@ class DBHelper {
     await db.close();
   }
 
-  Future<Workout> getWorkout(String id) async {
+  Future<Workout?> getWorkout(String id) async {
     ///getWorkout(String id)
     ///Fetches workout with specified id from database
     ///returns Future for Workout object
@@ -140,15 +140,10 @@ class DBHelper {
       Workout workout = Workout(
           DateTime(data['start']), DateTime(data['end']), weather, points);
 
-      print(workout);
       return workout;
+    } else {
+      return null;
     }
-
-    return Workout(DateTime.now(), DateTime.now(),
-        Weather(275.7, "few clouds", 1015, 75, {"speed": 4.63, "deg": 230}), [
-      RoutePoint(LatLng(43.9373, -78.8890), 145.0),
-      RoutePoint(LatLng(43.937, -78.8895), 140.0)
-    ]);
   }
 
   final List<String> _createDatabaseSQL = [
