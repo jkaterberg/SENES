@@ -57,29 +57,22 @@ class _TrackerState extends State<Tracker> {
                   IconButton(
                     onPressed: () async {
                       // Save the workout information, return to main screen
-                      print(startTime);
-                      print(
-                          await Weather.getCurrent(widget.points.first.latlng));
-
                       Workout workout = Workout(
                           startTime,
                           DateTime.now(),
                           await Weather.getCurrent(widget.points.first.latlng),
                           widget.points);
 
-                      DBHelper.dbHelper.insertWorkout(workout);
-                      await DBHelper.dbHelper.getWorkout(workout.workoutID);
+                      await DBHelper.dbHelper.insertWorkout(workout);
 
-                      //TODO navigate back to homepage
+                      Navigator.pop(context);
                     },
                     icon: const Icon(Icons.save),
                   ),
                   IconButton(
                       onPressed: () {
                         //cancel save workout
-                        print("cancel");
-
-                        //TODO: return to the main page
+                        Navigator.pop(context);
                       },
                       icon: const Icon(Icons.cancel)),
                 ]),

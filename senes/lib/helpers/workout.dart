@@ -18,6 +18,9 @@ class Workout {
             endTime.millisecondsSinceEpoch - startTime.millisecondsSinceEpoch);
   }
 
+  Workout.workout(this.startTime, this.endTime, this.weather, this.route,
+      this.duration, this.workoutID);
+
   @override
   String toString() {
     return "{workoutid: $workoutID, startTime: $startTime, endTime: $endTime, duration: $duration, weather: $weather, route: $route}";

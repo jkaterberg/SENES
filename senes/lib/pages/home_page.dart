@@ -29,126 +29,119 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var pastWorkoutList = <PastWorkout>[];
   var scheduledWorkouts = <Workout>[];
 
-  // this is just a list that is not empty and the contents do not matter.
-  var dummyWorkoutList = [
-    0,
-    1,
-    3,
-    5,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1
-  ];
   /* To do */
   /* Get date and duration data from past workouts and insert into ListTile */
 
   @override
   Widget build(BuildContext context) {
-    if (dummyWorkoutList.isNotEmpty) {
-      //reminder set to pastWorkoutList for production
-      return Scaffold(
-          drawer: Drawer(
-            child: ListView(
-              children: [
-                ListTile(
-                    title: const Text('Track activity'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Tracker()),
-                      );
-                    })
-              ],
-            ),
-          ),
-          appBar: AppBar(
-            title: const Text('SENES'),
-            bottom: TabBar(controller: _tabController, tabs: const [
-              Tab(
-                icon: Icon(Icons.favorite_border_outlined),
-                text: ('PAST WORKOUT'),
-              ),
-              Tab(
-                icon: Icon(Icons.alarm_on_outlined),
-                text: ('SCHEDULED'),
-              )
-            ]),
-          ),
-          floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              if (_tabController.index == 0) {
-              } else if (_tabController.index == 1) {
-                Navigator.pushNamed(context, ScheduleWorkoutPage.routename);
-                setState(() => print("help"));
-              }
-            },
-          ),
-          body: TabBarView(
-            controller: _tabController,
+    //reminder set to pastWorkoutList for production
+    return Scaffold(
+        drawer: Drawer(
+          child: ListView(
             children: [
-              // for past workouts
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: dummyWorkoutList
-                      .length, // set to pastWorkoutList for production
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      leading: const Icon(Icons.add_task_outlined),
-                      trailing: const Text(
-                          "Past workout duration"), // from pastWorkoutList
-                      title: Text(
-                          "Past Workout date($index)"), // from pastWorkoutList
+              ListTile(
+                  title: const Text('Track activity'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Tracker()),
                     );
-                  }),
-              // for scheduled workouts
-              FutureBuilder(
-                  future: DBHelper.dbHelper.getFutures(),
-                  builder:
-                      (context, AsyncSnapshot<List<FutureWorkout>> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                          padding: const EdgeInsets.all(8),
-                          itemCount: snapshot.data!
-                              .length, // set to scheduledWorkouts for production
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                              leading: const Icon(Icons.add_task_outlined),
-                              trailing: Text(snapshot.data![index].goal
-                                  .toString()
-                                  .split('.')
-                                  .first
-                                  .padLeft(8, "0")),
-                              title: Text(DateFormat('yyyy-MM-dd').format(
-                                  snapshot.data![index]
-                                      .time)), // from scheduledWorkouts
-                            );
-                          });
-                    } else {
-                      return const SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: CircularProgressIndicator());
-                    }
                   })
             ],
-          ));
-    } else {
-      return Scaffold(
-          appBar: AppBar(title: const Text('S.E.N.E.S')),
-          body: const Text("No previous workouts"));
-    }
+          ),
+        ),
+        appBar: AppBar(
+          title: const Text('SENES'),
+          bottom: TabBar(controller: _tabController, tabs: const [
+            Tab(
+              icon: Icon(Icons.favorite_border_outlined),
+              text: ('PAST WORKOUT'),
+            ),
+            Tab(
+              icon: Icon(Icons.alarm_on_outlined),
+              text: ('SCHEDULED'),
+            )
+          ]),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            if (_tabController.index == 0) {
+              Navigator.pushNamed(context, Tracker.routename);
+              setState(() => print('help'));
+            } else if (_tabController.index == 1) {
+              Navigator.pushNamed(context, ScheduleWorkoutPage.routename);
+              setState(() => print("help"));
+            }
+          },
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            FutureBuilder(
+              future: DBHelper.dbHelper.getPrevious(),
+              builder: (context,
+                  AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                            leading: const Icon(Icons.add_task_outlined),
+                            trailing: Text(Duration(
+                                    milliseconds: snapshot.data![index]
+                                        ['duration'])
+                                .toString()
+                                .split('.')
+                                .first
+                                .padLeft(8, "0")),
+                            title: Text(
+                              DateFormat('yyyy-MM-dd').format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      snapshot.data![index]['start'])),
+                            ) // from pastWorkoutList
+                            );
+                      });
+                } else {
+                  return const SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator());
+                }
+              },
+            ),
+            // for past workouts
+            // for scheduled workouts
+            FutureBuilder(
+                future: DBHelper.dbHelper.getFutures(),
+                builder:
+                    (context, AsyncSnapshot<List<FutureWorkout>> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: snapshot.data!
+                            .length, // set to scheduledWorkouts for production
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            leading: const Icon(Icons.add_task_outlined),
+                            trailing: Text(snapshot.data![index].goal
+                                .toString()
+                                .split('.')
+                                .first
+                                .padLeft(8, "0")),
+                            title: Text(DateFormat('yyyy-MM-dd').format(snapshot
+                                .data![index].time)), // from scheduledWorkouts
+                          );
+                        });
+                  } else {
+                    return const SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: CircularProgressIndicator());
+                  }
+                })
+          ],
+        ));
   }
 }

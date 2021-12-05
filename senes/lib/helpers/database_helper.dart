@@ -128,7 +128,7 @@ class DBHelper {
     }
   }
 
-  void insertWorkout(Workout data) async {
+  Future<void> insertWorkout(Workout data) async {
     /// insertWorkout(Workout data)
     /// Inserts the given workout into the database
     /// All info stored by workout object is put into appropriate database tables
@@ -191,6 +191,17 @@ class DBHelper {
     });
 
     await db.close();
+  }
+
+  Future<List<Map<String, dynamic>>> getPrevious() async {
+    Database db = await _createDatabase();
+
+    List<Map<String, dynamic>> data = await db
+        .query('pastworkout', columns: ['workoutid', 'start', 'duration']);
+
+    await db.close();
+
+    return data;
   }
 
   Future<Workout?> getWorkout(String id) async {
