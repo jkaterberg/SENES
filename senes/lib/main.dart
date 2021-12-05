@@ -1,6 +1,7 @@
 //@dart=2.10
 import 'package:flutter/material.dart';
 import 'package:senes/pages/past_workout.dart';
+import 'package:senes/pages/signup.dart';
 import 'package:senes/pages/tracker.dart';
 import 'package:senes/helpers/location_helper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,19 +18,21 @@ Future main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp();
+  const MyApp({Key key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        body: Tracker(),
-      ),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: SignupPage.routename,
+        routes: {
+          Tracker.routename: (context) => Tracker(),
+          PastWorkout.routename: (context) => PastWorkout(),
+          SignupPage.routename: (context) => const SignupPage(),
+        });
   }
 }

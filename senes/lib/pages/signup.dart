@@ -11,6 +11,8 @@ TODO:
 class SignupPage extends StatelessWidget {
   const SignupPage({Key? key}) : super(key: key);
 
+  static const routename = '/signup';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +28,7 @@ class SignupPage extends StatelessWidget {
                     Navigator.pop(context, true);
                   },
                 ))),
-        Image(
+        const Image(
             image: NetworkImage(
                 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.onlinewebfonts.com%2Fsvg%2Fimg_427844.png&f=1&nofb=1'),
             width: 200,

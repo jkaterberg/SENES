@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:senes/pages/login.dart';
-import 'package:senes/signup.dart';
+import 'package:senes/pages/signup.dart';
 /*
 Basic welcome page. Image is a placeholder, text inputs can be changed around depending on what we decide we need
 TODO:

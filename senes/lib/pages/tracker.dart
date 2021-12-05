@@ -15,6 +15,8 @@ import 'package:senes/helpers/database_helper.dart';
 class Tracker extends StatefulWidget {
   Tracker({Key? key}) : super(key: key);
 
+  static const String routename = '/tracker';
+
   List<RoutePoint> points = [];
   Stream<Position> posStream = Geolocator.getPositionStream(
     desiredAccuracy: LocationAccuracy.best,
