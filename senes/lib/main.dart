@@ -1,35 +1,24 @@
-//@dart=2.10
 import 'package:flutter/material.dart';
-import 'package:senes/pages/past_workout.dart';
-import 'package:senes/pages/tracker.dart';
-import 'package:senes/helpers/location_helper.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:senes/helpers/globals.dart';
+import 'signup.dart';
+import 'login.dart';
+import 'welcome_page.dart';
 
-Future main() async {
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
-
-  // Check for proper permissions
-  Global.LOCATION_PERMISSION = await LocationHelper.checkPermissions();
-
+void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp();
+  const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SENES',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
-      home: Scaffold(
-        body: Tracker(),
-      ),
+      home: WelcomePage(),
     );
   }
 }
