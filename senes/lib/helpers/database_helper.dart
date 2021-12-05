@@ -70,7 +70,7 @@ class DBHelper {
         .query('futureworkout', where: "workoutid = ?", whereArgs: [id]);
 
     if (data.isNotEmpty) {
-      return FutureWorkout(data[0]['time']);
+      return FutureWorkout(data[0]['time'], data[0]['goal'], data[0]['notes']);
     } else {
       return null;
     }
