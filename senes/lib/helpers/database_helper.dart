@@ -2,6 +2,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:senes/helpers/future_workout.dart';
 import 'package:senes/helpers/openweather_wrapper.dart';
 import 'package:senes/helpers/route_point.dart';
+import 'package:senes/helpers/user.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
@@ -34,6 +35,43 @@ class DBHelper {
   // Deletes database
   void _deleteDatabase() async {
     deleteDatabase(join(await getDatabasesPath(), 'senes.db'));
+  }
+
+  void insertUser(User data) async {
+    /// Inserts a new user into the database
+    ///
+    /// Parameters:
+    /// User data   -   user data to insert
+
+    //connect to db
+    Database db = await _createDatabase();
+
+    //insert info
+    await db.insert(
+        'user', {'userid': data.id, 'name': data.name, 'age': data.age});
+
+    db.close();
+  }
+
+  Future<User?> getUser(String id) async {
+    /// Retrieves user from database
+    ///
+    /// parameters:
+    /// String id   -   id of user to retrieve
+
+    //connect to db
+    Database db = await _createDatabase();
+
+    // query the user
+    List<Map<String, dynamic>> data =
+        await db.query('user', where: 'userid = ?', whereArgs: [id]);
+
+    // return user object
+    if (data.isNotEmpty) {
+      return User(data[0]['name'], data[0]['age']);
+    } else {
+      return null;
+    }
   }
 
   void insertFuture(FutureWorkout data) async {
