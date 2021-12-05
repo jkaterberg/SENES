@@ -53,18 +53,17 @@ class DBHelper {
     db.close();
   }
 
-  Future<User?> getUser(String id) async {
+  Future<User?> getUser() async {
     /// Retrieves user from database
     ///
-    /// parameters:
-    /// String id   -   id of user to retrieve
+    /// Returns:
+    /// Future<User?>   -   Future of User object, if one exists
 
     //connect to db
     Database db = await _createDatabase();
 
     // query the user
-    List<Map<String, dynamic>> data =
-        await db.query('user', where: 'userid = ?', whereArgs: [id]);
+    List<Map<String, dynamic>> data = await db.query('user');
 
     // return user object
     if (data.isNotEmpty) {
