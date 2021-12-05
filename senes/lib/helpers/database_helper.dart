@@ -106,10 +106,11 @@ class DBHelper {
 
     List<FutureWorkout> futures = [];
     for (Map<String, dynamic> future in data) {
-      futures.add(FutureWorkout(
+      futures.add(FutureWorkout.existing(
           DateTime.fromMillisecondsSinceEpoch(future['time']),
           Duration(minutes: future['goal']),
-          future['note']));
+          future['note'],
+          future['workoutid']));
     }
 
     return futures;

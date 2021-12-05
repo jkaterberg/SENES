@@ -33,9 +33,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /* Get date and duration data from past workouts and insert into ListTile */
 
   List<String> _pastSelected = [];
-  List<int> _futureSelected = [];
+  List<String> _futureSelected = [];
+
   @override
   Widget build(BuildContext context) {
+    _tabController.addListener(() {
+      print('reset');
+      setState(() {
+        if (_tabController.index == 1) {
+          _pastSelected.clear();
+        } else if (_tabController.index == 0) {
+          print('clear');
+          _futureSelected.clear();
+        }
+      });
+    });
+
     //reminder set to pastWorkoutList for production
     return Scaffold(
         drawer: Drawer(
@@ -180,36 +193,57 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 }
               },
             ),
-            // for past workouts
-            // for scheduled workouts
+            /*
+            Tab for scheduled workouts. Retrieves them from a database and 
+            builds them as a list tile for display in a ListView
+            */
             FutureBuilder(
-                future: DBHelper.dbHelper.getFutures(),
-                builder:
-                    (context, AsyncSnapshot<List<FutureWorkout>> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: snapshot.data!
-                            .length, // set to scheduledWorkouts for production
-                        itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            leading: const Icon(Icons.add_task_outlined),
-                            trailing: Text(snapshot.data![index].goal
-                                .toString()
-                                .split('.')
-                                .first
-                                .padLeft(8, "0")),
-                            title: Text(DateFormat('yyyy-MM-dd').format(snapshot
-                                .data![index].time)), // from scheduledWorkouts
-                          );
-                        });
-                  } else {
-                    return const SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: CircularProgressIndicator());
-                  }
-                })
+              future: DBHelper.dbHelper.getFutures(),
+              builder: (context, AsyncSnapshot<List<FutureWorkout>> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: snapshot.data!
+                        .length, // set to scheduledWorkouts for production
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        leading:
+                            _futureSelected.contains(snapshot.data![index].id)
+                                ? const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.blue,
+                                  )
+                                : const Icon(Icons.add_task_outlined),
+                        trailing: Text(snapshot.data![index].goal
+                            .toString()
+                            .split('.')
+                            .first
+                            .padLeft(8, "0")),
+                        title: Text(DateFormat('yyyy-MM-dd')
+                            .format(snapshot.data![index].time)),
+                        onLongPress: () {
+                          print("loooooooooong pt 2");
+                          setState(() {
+                            if (!_futureSelected
+                                .contains(snapshot.data![index].id)) {
+                              _futureSelected.add(snapshot.data![index].id);
+                            } else {
+                              _futureSelected.remove(snapshot.data![index].id);
+                            }
+                          });
+                          print(_futureSelected);
+                        }, // from scheduledWorkouts
+                      );
+                    },
+                  );
+                } else {
+                  return const SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator());
+                }
+              },
+            )
           ],
         ));
   }
