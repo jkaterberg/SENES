@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:senes/pages/past_workout.dart';
 import 'package:senes/pages/tracker.dart';
+import 'package:senes/pages/home_page.dart';
 import 'package:senes/helpers/location_helper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:senes/helpers/globals.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        body: Tracker(),
+        body: HomePage(),
       ),
     );
   }
