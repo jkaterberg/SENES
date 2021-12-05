@@ -49,6 +49,7 @@ class DBHelper {
     await db.insert('futureworkout', {
       'workoutid': data.id,
       'time': data.time,
+      'goal': data.goal.inMilliseconds,
       'route': data.route,
     });
 
@@ -200,6 +201,8 @@ CREATE TABLE "user" (
     """CREATE TABLE "futureworkout" (
 	"workoutid"	TEXT NOT NULL,
 	"time"	INTEGER NOT NULL,
+  "goal"  INTEGER NOT NULL,
+  "notes" STRING NOT NULL,
 	"route"	INTEGER,
 	FOREIGN KEY("route") REFERENCES "route"("routeid"),
 	PRIMARY KEY("workoutid")
