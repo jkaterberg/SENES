@@ -26,4 +26,5 @@ Check the Issues tab to see what is currently being worked on
 1. Setup a Flutter development environment ([guide](docs.flutter.com/get-started/install))
 2. Setup and run an Android emulator
 3. Clone this repo: `git clone https://github.com/jkaterberg/SENES.git && cd SENES/senes`
-4. Run via flutter command line tool: `flutter run`
+4. Rename .env_sample to .env and paste MapBox API stuff in the appropriate places
+5. Run via flutter command line tool: `flutter run`
