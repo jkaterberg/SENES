@@ -32,6 +32,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /* To do */
   /* Get date and duration data from past workouts and insert into ListTile */
 
+  List<String> _pastSelected = [];
+  List<int> _futureSelected = [];
   @override
   Widget build(BuildContext context) {
     //reminder set to pastWorkoutList for production
@@ -63,18 +65,57 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             )
           ]),
         ),
+
+        /*
+        Floating action button - serves two purposes
+          1. If no items are selected, then it will take actions to add new 
+              items
+          2. If items are selected, will remove them from the database
+        */
         floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
+          child: _pastSelected.isEmpty && _futureSelected.isEmpty
+              ? const Icon(Icons.add)
+              : const Icon(Icons.delete),
           onPressed: () {
-            if (_tabController.index == 0) {
-              Navigator.pushNamed(context, Tracker.routename);
-              setState(() => print('updating'));
-            } else if (_tabController.index == 1) {
-              Navigator.pushNamed(context, ScheduleWorkoutPage.routename);
-              setState(() => print("updating"));
+            if (_pastSelected.isNotEmpty) {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                        title: const Text("Confirm"),
+                        content: Text("Deleting selected workouts"),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Cancel');
+                              },
+                              child: const Text("Cancel")),
+                          TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  for (String i in _pastSelected) {
+                                    DBHelper.dbHelper.deletePastWorkout(i);
+                                  }
+                                });
+                                Navigator.pop(context, 'OK');
+                              },
+                              child: const Text("OK"))
+                        ],
+                      ));
+            } else {
+              if (_tabController.index == 0) {
+                Navigator.pushNamed(context, Tracker.routename);
+                setState(() => print('updating'));
+              } else if (_tabController.index == 1) {
+                Navigator.pushNamed(context, ScheduleWorkoutPage.routename);
+                setState(() => print("updating"));
+              }
             }
           },
         ),
+        /*
+        Tab to view past workouts. Pulls workouts from database and generates 
+        a ListTile object to display in ListView
+        */
         body: TabBarView(
           controller: _tabController,
           children: [
@@ -83,12 +124,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               builder: (context,
                   AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                 if (snapshot.hasData) {
+                  //Build the ListView
+
                   return ListView.builder(
                       padding: const EdgeInsets.all(8),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (BuildContext context, int index) {
+                        //Build the List Tile object
                         return ListTile(
-                          leading: const Icon(Icons.add_task_outlined),
+                          leading: _pastSelected
+                                  .contains(snapshot.data![index]['workoutid'])
+                              ? const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.blue,
+                                )
+                              : const Icon(Icons.add_task_outlined),
                           trailing: Text(Duration(
                                   milliseconds: snapshot.data![index]
                                       ['duration'])
@@ -104,6 +154,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           subtitle: Text(DateFormat('HH:mm').format(
                               DateTime.fromMillisecondsSinceEpoch(
                                   snapshot.data![index]['start']))),
+                          onTap: () => Navigator.pushNamed(
+                              context, PastWorkout.routename,
+                              arguments: snapshot.data![index]['workoutid']),
+                          onLongPress: () {
+                            print("loooooooooooooooooooooooooong");
+                            setState(() {
+                              if (!_pastSelected.contains(
+                                  snapshot.data![index]['workoutid'])) {
+                                _pastSelected
+                                    .add(snapshot.data![index]['workoutid']);
+                              } else {
+                                _pastSelected
+                                    .remove(snapshot.data![index]['workoutid']);
+                              }
+                            });
+                          },
                         );
                       });
                 } else {

@@ -37,6 +37,15 @@ class DBHelper {
     deleteDatabase(join(await getDatabasesPath(), 'senes.db'));
   }
 
+  // Delete past workout from database
+  Future<void> deletePastWorkout(String id) async {
+    //connect to db
+    Database db = await _createDatabase();
+
+    //send the query
+    db.delete('pastworkout', where: 'workoutid = ?', whereArgs: [id]);
+  }
+
   Future<User?> getUser() async {
     /// Gets user from db
     ///
@@ -224,8 +233,10 @@ class DBHelper {
           weatherData['temperature'],
           weatherData['clouds'],
           weatherData['pressure'],
-          weatherData['humidity'],
-          {'speed': weatherData['wind_speed'], 'deg': weatherData['deg']});
+          weatherData['humidity'], {
+        'speed': weatherData['wind_speed'],
+        'deg': weatherData['wind_direction']
+      });
 
       // get data for route
       List<Map<String, dynamic>> routeData = await db
@@ -239,12 +250,15 @@ class DBHelper {
         return RoutePoint.withTime(
             LatLng(routeData[i]['latitude'], routeData[i]['longitude']),
             routeData[i]['altitude'].toDouble(),
-            DateTime.fromMillisecondsSinceEpoch(routeData[0]['time']));
+            DateTime.fromMillisecondsSinceEpoch(routeData[i]['time']));
       });
 
       // Construct workout object
       Workout workout = Workout(
-          DateTime(data['start']), DateTime(data['end']), weather, points);
+          DateTime.fromMillisecondsSinceEpoch(data['start']),
+          DateTime.fromMillisecondsSinceEpoch(data['end']),
+          weather,
+          points);
 
       return workout;
     } else {
