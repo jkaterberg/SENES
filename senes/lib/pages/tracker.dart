@@ -97,7 +97,8 @@ class _TrackerState extends State<Tracker> {
               );
             } else {
               //return loading screen
-              return Center(
+              return Scaffold(
+                  body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,11 +112,11 @@ class _TrackerState extends State<Tracker> {
                         child: Text('Loading Location...'))
                   ],
                 ),
-              );
+              ));
             }
           });
     } else {
-      return const Text("Enable location services to continue");
+      return const Scaffold(body: Text("Enable location services to continue"));
     }
   }
 }

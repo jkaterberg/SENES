@@ -1,5 +1,6 @@
 //@dart=2.10
 import 'package:flutter/material.dart';
+import 'package:senes/pages/newwp.dart';
 import 'package:senes/pages/past_workout.dart';
 import 'package:senes/pages/signup.dart';
 import 'package:senes/pages/tracker.dart';
@@ -28,11 +29,15 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: SignupPage.routename,
+        builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child),
+        initialRoute: ScheduleWorkoutPage.routename,
         routes: {
           Tracker.routename: (context) => Tracker(),
           PastWorkout.routename: (context) => PastWorkout(),
           SignupPage.routename: (context) => const SignupPage(),
+          ScheduleWorkoutPage.routename: (context) => ScheduleWorkoutPage()
         });
   }
 }

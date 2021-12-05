@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:senes/helpers/database_helper.dart';
+import 'package:senes/helpers/future_workout.dart';
 
 /*
 Basic welcome page. Image is a placeholder, text inputs can be changed around depending on what we decide we need
@@ -7,69 +10,116 @@ TODO:
   - Validate inputs
   - Insert validated data into the database
 */
-class Workout extends StatefulWidget {
-  NewWorkoutPage createState() => NewWorkoutPage();
+class ScheduleWorkoutPage extends StatefulWidget {
+  static const String routename = '/schedule';
+
+  @override
+  _ScheduleWorkoutPageState createState() => _ScheduleWorkoutPageState();
 }
 
-class NewWorkoutPage extends State<Workout> {
-  DateTime? _dateTime;
-  TimeOfDay? _time = TimeOfDay(hour: 15, minute: 1);
-  TimeOfDay? picked;
+class _ScheduleWorkoutPageState extends State<ScheduleWorkoutPage> {
+  final TextEditingController timeController = TextEditingController();
+  final DateFormat dayFormat = DateFormat('yyyy-MM-dd');
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
+  final TextEditingController goalController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+    MaterialLocalizations.of(context)
+        .timeOfDayFormat(alwaysUse24HourFormat: true);
+    dateController.text = dayFormat.format(DateTime.now());
+    timeController.text = MaterialLocalizations.of(context)
+        .formatTimeOfDay(TimeOfDay.now(), alwaysUse24HourFormat: true);
     return Scaffold(
+        appBar: AppBar(),
         body:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Column(children: <Widget>[
-        Container(
-            child: Align(
-                alignment: Alignment(-1, -1),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () async {
-                    Navigator.pop(context, true);
-                  },
-                ))),
-        Text("Add Workout",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30))
-      ]),
-      const SizedBox(height: 10),
-      Center(
-        child: Column(children: <Widget>[
-          Text(_dateTime == null ? '---- -- --' : _dateTime.toString()),
-          ElevatedButton(
-              child: Text('Pick a date'),
-              onPressed: () {
-                showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2001),
-                        lastDate: DateTime(2222))
-                    .then((date) {
-                  setState(() {
-                    _dateTime = date;
-                  });
-                });
-              }),
-          Text(_time == null ? '-- --' : _time.toString()),
-          ElevatedButton(
-              child: Text('Pick a time'),
-              onPressed: () {
-                showTimePicker(context: context, initialTime: TimeOfDay.now())
-                    .then((time) {
-                  setState(() {
-                    _time = time;
-                  });
-                });
-              }),
-          ElevatedButton(
-            child: const Text("Submit"),
-            onPressed: () {},
-          ),
-          const SizedBox(height: 300),
-          const SizedBox(height: 10),
-        ]),
-      )
-    ]));
+          Center(
+            child: Column(children: <Widget>[
+              const Text("Add Workout",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+              Form(
+                  key: _formKey,
+                  child: Column(children: [
+                    TextFormField(
+                      controller: dateController,
+                      readOnly: true,
+                      onTap: () {
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2222),
+                        ).then((date) {
+                          dateController.text = dayFormat.format(date!);
+                        });
+                      },
+                      validator: (value) {
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.calendar_today), labelText: 'Date'),
+                    ),
+                    TextFormField(
+                      controller: timeController,
+                      readOnly: true,
+                      onTap: () {
+                        showTimePicker(
+                          initialTime: TimeOfDay.now(),
+                          context: context,
+                        ).then((time) {
+                          timeController.text =
+                              MaterialLocalizations.of(context).formatTimeOfDay(
+                                  time!,
+                                  alwaysUse24HourFormat: true);
+                        });
+                      },
+                      validator: (value) {
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.access_time), labelText: 'Time'),
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.timer),
+                          labelText: 'Goal Duration (mins)'),
+                      controller: goalController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter a goal";
+                        } else if (int.tryParse(value) == null) {
+                          return "Invalid Input";
+                        }
+                      },
+                    ),
+                    TextFormField(
+                      controller: noteController,
+                      decoration: const InputDecoration(
+                          icon: Icon(Icons.note_add), labelText: "Notes"),
+                    ),
+                    ElevatedButton(
+                      child: const Text("Submit"),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          //Insert info into db
+                          DBHelper.dbHelper.insertFuture(FutureWorkout(
+                              DateTime.parse(dateController.text +
+                                  "T" +
+                                  timeController.text),
+                              Duration(
+                                  milliseconds: int.parse(goalController.text)),
+                              noteController.text));
+
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ])),
+            ]),
+          )
+        ]));
   }
 }
