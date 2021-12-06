@@ -126,6 +126,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   for (String i in _futureSelected) {
                                     DBHelper.dbHelper.deleteFutureWorkout(i);
                                   }
+                                  _pastSelected.clear();
+                                  _futureSelected.clear();
                                 });
                                 //close alert
                                 Navigator.pop(context, 'OK');

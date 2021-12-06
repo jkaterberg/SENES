@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senes/helpers/database_helper.dart';
 import 'package:senes/helpers/future_workout.dart';
+import 'package:senes/helpers/notification.dart';
 
 class ScheduleWorkoutPage extends StatefulWidget {
   /// Page to allow user to schedule a workout in the future
@@ -117,14 +118,22 @@ class _ScheduleWorkoutPageState extends State<ScheduleWorkoutPage> {
                         // Validate each field
                         if (_formKey.currentState!.validate()) {
                           //Insert info into db
+                          DateTime time = DateTime.parse(
+                              dateController.text + "T" + timeController.text);
+
                           DBHelper.dbHelper.insertFuture(FutureWorkout(
                               // Super awful way to parse the date, but it works
-                              DateTime.parse(dateController.text +
-                                  "T" +
-                                  timeController.text),
+                              time,
                               Duration(
                                   milliseconds: int.parse(goalController.text)),
                               noteController.text));
+
+                          NotificationHelper(context).scheduleNotification(
+                              "Upcoming Workout",
+                              "You have a workout scheduled in 1 hour",
+                              time.subtract(const Duration(hours: 1)));
+
+                          print(time.subtract(const Duration(hours: 1)));
 
                           Navigator.pop(context);
                         }

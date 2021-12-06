@@ -9,6 +9,7 @@ import 'package:senes/pages/home.dart';
 import 'package:senes/helpers/location_helper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:senes/helpers/globals.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future main() async {
   // Load environment variables

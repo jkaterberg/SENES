@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:senes/helpers/notification.dart';
 import 'package:senes/helpers/route_point.dart';
 import 'package:senes/helpers/workout.dart';
 import 'package:senes/widgets/altitude_graph.dart';
